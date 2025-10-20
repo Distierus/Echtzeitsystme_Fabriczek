@@ -19,6 +19,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+/* Standard C headers */
+#include <stdio.h>
+#include <assert.h>
+
+/* FreeRTOS headers */
+#include "FreeRTOS.h"
+#include "task.h"
+// #include "semphr.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
