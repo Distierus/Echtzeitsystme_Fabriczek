@@ -175,7 +175,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  initialise_stdlib_abstraction()
+  initialise_stdlib_abstraction();
 
   vTaskStartScheduler();
   /* USER CODE END 2 */
