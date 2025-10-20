@@ -1,0 +1,4 @@
+﻿  UnitTests.c
+UnitTests.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "_cmocka_run_group_tests" in Funktion "main".
+..\..\..\LibCMocka\lib\cmocka.lib : warning LNK4272: Bibliothekcomputertyp "x86" steht in Konflikt mit dem Zielcomputertyp "x64"
+C:\HomeGit\STM32\libs\LibSpindle\test\UnitTests\x64\Debug\UnitTests.exe : fatal error LNK1120: 1 nicht aufgelöste Externe

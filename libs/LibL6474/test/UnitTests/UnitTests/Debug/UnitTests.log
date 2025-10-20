@@ -1,0 +1,30 @@
+﻿  UnitTests.c
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(306,165): warning C4133: "Initialisierung": Inkompatible Typen - von "uint32_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(307,164): warning C4133: "Initialisierung": Inkompatible Typen - von "uint32_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(308,162): warning C4133: "Initialisierung": Inkompatible Typen - von "uint32_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(317,164): warning C4133: "Initialisierung": Inkompatible Typen - von "uint16_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(318,164): warning C4133: "Initialisierung": Inkompatible Typen - von "uint16_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(543,35): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(560,43): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(566,33): warning C4133: "==": Inkompatible Typen - von "uint32_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(568,40): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(574,56): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(580,47): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(585,47): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(591,44): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(592,43): warning C4090: "Funktion": Unterschiedliche "const"-Qualifizierer
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(593,37): warning C4133: "==": Inkompatible Typen - von "uint32_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(600,27): warning C4133: "Initialisierung": Inkompatible Typen - von "uint16_t *" zu "char *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(906,5): warning C4133: "Funktion": Inkompatible Typen - von "int *" zu "L6474x_StepMode_t *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(923,5): warning C4133: "Funktion": Inkompatible Typen - von "int *" zu "L6474x_StepMode_t *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(954,5): warning C4133: "Funktion": Inkompatible Typen - von "int *" zu "L6474x_StepMode_t *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(978,5): warning C4133: "Funktion": Inkompatible Typen - von "int *" zu "L6474x_StepMode_t *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1011,5): warning C4133: "Funktion": Inkompatible Typen - von "int *" zu "L6474x_StepMode_t *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1035,5): warning C4133: "Funktion": Inkompatible Typen - von "int *" zu "L6474x_StepMode_t *"
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1189,23): warning C4090: "Funktion": Unterschiedliche "const"-Qualifizierer
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1189,23): warning C4113: "void (__cdecl *)(void *)" weicht in der Parameterliste von "void (__cdecl *)(const void *const )" ab
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1215,23): warning C4090: "Funktion": Unterschiedliche "const"-Qualifizierer
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1215,23): warning C4113: "void (__cdecl *)(void *)" weicht in der Parameterliste von "void (__cdecl *)(const void *const )" ab
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1245,47): warning C4090: "Funktion": Unterschiedliche "const"-Qualifizierer
+C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\UnitTests.c(1245,47): warning C4113: "void (__cdecl *)(void *)" weicht in der Parameterliste von "void (__cdecl *)(const void *const )" ab
+  UnitTests.vcxproj -> C:\HomeGit\STM32\libs\LibL6474\test\UnitTests\Debug\UnitTests.exe

@@ -1,0 +1,49 @@
+@startuml inline_umlgraph_1.png
+Library -> platform_free_function : Requests release of allocated memory
+platform_free_function -> stdlib : call free
+platform_free_function <- stdlib
+Library <- platform_free_function
+@enduml
+@startuml inline_umlgraph_3.png
+Library -> platform_malloc_function : Requests dynamic memory
+platform_malloc_function -> stdlib  : call malloc
+platform_malloc_function <- stdlib
+Library <- platform_malloc_function : returns memory pointer
+@enduml
+@startuml inline_umlgraph_5.png
+Library -> platform_reset_function : Requests reset of the chip
+platform_reset_function -> gpio_driver : set pin to !ena
+platform_reset_function <- gpio_driver
+Library <- platform_reset_function
+@enduml
+@startuml inline_umlgraph_7.png
+Library -> platform_sleep_function : Requests sleep by the library
+platform_sleep_function -> scheduler : sleep(ms)
+platform_sleep_function <- scheduler
+Library <- platform_sleep_function
+@enduml
+@startuml inline_umlgraph_9.png
+Library ->> platform_step_function : Requests generating pulses async
+  loop 'numPulses' times
+    platform_step_function -> gpio_driver : Set high
+    platform_step_function <- gpio_driver
+    platform_step_function -> scheduler : sleep(ms)
+    platform_step_function <- scheduler
+    platform_step_function -> gpio_driver : Set low
+    platform_step_function <- gpio_driver
+    platform_step_function -> scheduler : sleep(ms)
+    platform_step_function <- scheduler
+  end
+@enduml
+@startuml inline_umlgraph_11.png
+Library -> platform_transfer_function : Requests read and write simultaneously
+loop num of bytes
+  platform_transfer_function -> gpio_driver : CS low
+  platform_transfer_function <- gpio_driver
+  platform_transfer_function -> spi_driver : 1 byte rx + tx
+  platform_transfer_function <- spi_driver
+  platform_transfer_function -> gpio_driver : CS high
+  platform_transfer_function <- gpio_driver
+end
+Library <- platform_transfer_function
+@enduml

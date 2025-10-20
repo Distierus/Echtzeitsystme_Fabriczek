@@ -1,0 +1,18 @@
+/*
+ * ConsoleConfig.h
+ *
+ *  Created on: Dec 9, 2024
+ *      Author: Thorsten
+ */
+
+#ifndef INC_CONSOLE_CONSOLECONFIG_H_
+#define INC_CONSOLE_CONSOLECONFIG_H_
+
+#define CONSOLE_USERNAME  "STM32"
+#define CONSOLE_USE_DYNAMIC_USERNAME 1
+#define CONSOLE_LINE_HISTORY 8
+#define CONSOLE_LINE_SIZE 120
+#define CONSOLE_COMMAND_MAX_LENGTH 64
+#define CONSOLE_HELP_MAX_LENGTH 512
+
+#endif /* INC_CONSOLE_CONSOLECONFIG_H_ */

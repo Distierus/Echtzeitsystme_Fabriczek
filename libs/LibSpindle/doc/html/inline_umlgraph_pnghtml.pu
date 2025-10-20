@@ -1,0 +1,27 @@
+@startuml inline_umlgraph_1.png
+alt ena = 1
+  Library -> platform_enable_function : Requests a duty cycle change
+  platform_enable_function -> timer_driver : enable PWM
+  platform_enable_function <- timer_driver
+  platform_enable_function -> gpio_driver : enable H-bridge
+  platform_enable_function <- gpio_driver
+  Library <- platform_enable_function
+else ena = 0
+  Library -> platform_enable_function : Requests a duty cycle change
+  platform_enable_function -> timer_driver : disable PWM or set duty cycle to 0
+  platform_enable_function <- timer_driver
+  platform_enable_function -> gpio_driver : disable H-bridge
+  platform_enable_function <- gpio_driver
+  Library <- platform_enable_function
+end
+@enduml
+@startuml inline_umlgraph_3.png
+Library -> platform_set_direction_function : Requests a direction change
+Library <- platform_set_direction_function
+@enduml
+@startuml inline_umlgraph_5.png
+Library -> platform_set_duty_cycle_function : Requests a duty cycle change
+platform_set_duty_cycle_function -> timer_driver : change duty cycle
+platform_set_duty_cycle_function <- timer_driver
+Library <- platform_set_duty_cycle_function
+@enduml
