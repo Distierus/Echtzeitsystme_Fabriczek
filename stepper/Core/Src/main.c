@@ -32,6 +32,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "my_spindle.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
