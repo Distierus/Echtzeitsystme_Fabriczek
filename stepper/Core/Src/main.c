@@ -31,8 +31,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "FreeRTOSConfig.h"
 #include "my_spindle.h"
+#include "my_console.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -187,7 +188,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  MyConsole_Init();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

@@ -7,6 +7,9 @@
 #include "my_spindle.h" //
 #include "Spindle.h"
 #include "Console.h" // Für ConsoleHandle_t
+
+extern int configMINIMAL_STACK_SIZE;
+extern int configMAX_PRIORITIES;
 //Hardwarespezifische Funktionen
 void init_Spindle(void){
 	//initialise all neccessary Harware Components to use Spindle
@@ -31,9 +34,7 @@ void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
 	//TODO
 }
 void Initialize_Spindle(ConsoleHandle_t c){
-	int configMINIMAL_STACK_SIZE = 128; //gibt minimale Speicherallokation an, die währen der Task auftreten kann, um Owerfolow zu vermeiden
-	int configMAX_PRIORITIES = 10; //definiert das Prioritätslevel der Task, später sinnvoll global anzugeben
-	//Struct für Spindel erstellen
+		//Struct für Spindel erstellen
 	SpindlePhysicalParams_t s;
 	//RPM-Werte zuweisen
 	s.maxRPM             =  9000.0f;
