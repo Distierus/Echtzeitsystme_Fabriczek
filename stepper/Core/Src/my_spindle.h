@@ -9,6 +9,8 @@
 #define SRC_OUR_SPINDLE_H_#
 
 #include "Spindle.h"
+//Initial Configurations
+void init_Spindle(void);
 //Notwenidge Harware Dunktionen, die an die Lib Spindle übergeben werden müssen
 void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int backward);
 void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float dutyCycle);

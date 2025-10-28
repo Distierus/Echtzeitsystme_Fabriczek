@@ -8,9 +8,28 @@
 #include "Spindle.h"
 #include "Console.h" // Für ConsoleHandle_t
 //Hardwarespezifische Funktionen
-void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int backward){}
-void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float dutyCycle){}
-void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){}
+void init_Spindle(void){
+	//initialise all neccessary Harware Components to use Spindle
+	//TODO
+}
+void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int backward){
+	//Hardware Funktion um Rotationsrichtung zu bestimmen
+	if(backward <= 0){
+		//Roatation links herum
+		//TODO
+	}else{
+		//Rotation rechts herum
+		//TODO
+	}
+}
+void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float dutyCycle){
+	//DUTY Cycle bestimmt Drehgeschwindigkeit vermutlich mit maxRPM* %Duty Cycle
+	//TODO
+}
+void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
+	//Switch PWM on or off -> Switch Spindle on or off
+	//TODO
+}
 void Initialize_Spindle(ConsoleHandle_t c){
 	int configMINIMAL_STACK_SIZE = 128; //gibt minimale Speicherallokation an, die währen der Task auftreten kann, um Owerfolow zu vermeiden
 	int configMAX_PRIORITIES = 10; //definiert das Prioritätslevel der Task, später sinnvoll global anzugeben
