@@ -6,7 +6,7 @@
  */
 #include "my_spindle.h" //
 #include "Spindle.h"
-#include "Console.h" // Für ConsoleHandle_t
+#include "Console.h" // fuer ConsoleHandle_t
 
 extern int configMINIMAL_STACK_SIZE;
 extern int configMAX_PRIORITIES;
