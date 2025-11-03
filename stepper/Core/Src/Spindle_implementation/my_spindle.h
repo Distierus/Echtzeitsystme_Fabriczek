@@ -8,6 +8,8 @@
 #ifndef MY_SPINDLE_H
 #define MY_SPINDLE_H
 
+
+#include "Spindle.h"
 //Initial Configurations
 void init_Spindle(void);
 //notwendige Harware Funktionen, die an die Lib Spindle uebergeben werden muessen
