@@ -9,7 +9,9 @@
 #include "ConsoleConfig.h"
 #include "FreeRTOSConfig.h"
 #include <stdio.h>
+#include <stdbool.h>
 
+extern bool error_variable;
 
 
 // register the function, there is always a help text required, an empty string or null is not allowed!

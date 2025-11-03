@@ -35,6 +35,8 @@
 #include "Console_implementation/my_console.h"
 /* USER CODE END Includes */
 
+#include <stdbool.h>
+
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
@@ -59,6 +61,9 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart3;
+
+// bool variable to
+bool error_variable = false;
 
 /* USER CODE BEGIN PV */
 
