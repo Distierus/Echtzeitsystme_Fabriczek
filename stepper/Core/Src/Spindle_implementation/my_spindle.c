@@ -34,13 +34,13 @@ void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
 	//TODO
 }
 void Initialize_Spindle(ConsoleHandle_t c){
-		//Struct für Spindel erstellen
+	//Struct fuer spindel erstellen
 	SpindlePhysicalParams_t s;
 	//RPM-Werte zuweisen
 	s.maxRPM             =  9000.0f;
 	s.minRPM             = -9000.0f;
 	s.absMinRPM          =  1600.0f;
-	//Funktions Handels an LIB übergeben
+	//function handels an LIB uebergeben
 	s.setDirection       = SPINDLE_SetDirection;
 	s.setDutyCycle       = SPINDLE_SetDutyCycle;
 	s.enaPWM             = SPINDLE_EnaPWM;

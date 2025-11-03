@@ -31,8 +31,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "FreeRTOSConfig.h"
-#include "my_spindle.h"
-#include "my_console.h"
+#include "Spindle_implementation/my_spindle.h"
+#include "Console_implementation/my_console.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
