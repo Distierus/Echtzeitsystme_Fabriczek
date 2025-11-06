@@ -2,7 +2,7 @@
  * spindle.c
  *
  *  Created on: Oct 27, 2025
- *      Author: Administrator
+ *      Author: Basti
  */
 #include "main.h"
 #include "my_spindle.h" // own Spindle-Header file
@@ -15,7 +15,7 @@
 extern int configMINIMAL_STACK_SIZE;
 extern int configMAX_PRIORITIES;
 extern bool error_variable;
-extern TIM_HandleTypeDef htim2; //
+extern TIM_HandleTypeDef htim2; // wird in main.c definiert
 
 //Hardwarespezifische Funktionen
 void init_Spindle(void){
@@ -52,8 +52,8 @@ void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
 	//ena = value that sets enable or disable state (=1 enabled, =0 disabled)
 	if (ena == 1)
 	{
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 0);
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 0);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 0); // SPINDLE_PWM_L
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 0); // SPINDLE_PWM_R
 		error_occurred1 = (int) HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
 		error_occurred2 = (int) HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 		// HAL_TIM_PWM_Start returns enum ("HAL_StatusTypeDef") with value 0 (=no error), 1, 2 or 3 (=error)

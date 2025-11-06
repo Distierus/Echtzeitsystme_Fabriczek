@@ -2,7 +2,7 @@
  * spindle.h
  *
  *  Created on: Oct 27, 2025
- *      Author: Administrator
+ *      Author: Basti
  */
 
 #ifndef MY_SPINDLE_H
