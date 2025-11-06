@@ -183,7 +183,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   initialise_stdlib_abstraction();
-
+  MyConsole_Init();
   vTaskStartScheduler();
   /* USER CODE END 2 */
 
@@ -192,7 +192,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  MyConsole_Init();
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
