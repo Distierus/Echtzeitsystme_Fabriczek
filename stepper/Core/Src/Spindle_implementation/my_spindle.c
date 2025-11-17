@@ -20,7 +20,7 @@ extern TIM_HandleTypeDef htim2; // wird in main.c definiert
 static int8_t current_spindle_direction = 1;
 float current_spindle_duty_cycle = 0;
 
-//Hardwarespezifische Funktionen
+//Hardwarespezifische Funktionen - jetzt doch nicht mehr verwendet
 /*
 void init_Spindle(void){
 	//initialise all neccessary Harware Components to use Spindle
