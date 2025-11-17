@@ -75,7 +75,9 @@ static int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigne
 
 static void StepDriverReset(void *pGPO, const int ena)
 {
-
+	// the reset function is used to provide gpio access to the reset of the stepper driver chip.
+	// the chip has a reset not pin and so the ena signal must be inverted to set the correct reset level physically
+	HAL_GPIO_WritePin(STEP_RSTN_GPIO_Port, STEP_RSTN_Pin, !ena);
 }
 
 static void StepLibraryDelay(unsigned int ms)
