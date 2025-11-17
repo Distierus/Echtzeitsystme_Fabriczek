@@ -8,13 +8,12 @@
 #include "my_spindle.h" // own Spindle-Header file
 #include "Spindle.h"	// from LibSpindle
 #include "Console.h"	// fuer ConsoleHandle_t
+#include "FreeRTOSConfig.h"
 #include <stdint.h>		// fuer einheitliche Datentypen
 #include <stdbool.h>	// fuer boolean type
 #include <stdio.h>		// fuer printf Output -> newlib liefert die selben Ergebnisse wie stdio.h ist aber spezifischer
 						// -> dadurch waere dieses Projekt nicht auf andere Microcontroller portierbar
 
-extern int configMINIMAL_STACK_SIZE;
-extern int configMAX_PRIORITIES;
 extern bool error_variable;
 extern TIM_HandleTypeDef htim2; // wird in main.c definiert
 // direction 0 == vorwaerts, 1 == zurueck
@@ -63,21 +62,25 @@ void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
 	//ena = value that sets enable or disable state (=1 enabled, =0 disabled)
 	if (ena == 1)
 	{
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 0); // SPINDLE_PWM_L
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 0); // SPINDLE_PWM_R
+		// __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 0); // SPINDLE_PWM_L
+		// __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 0); // SPINDLE_PWM_R
 		// duty cycle auf 0 stellen ist wichtig, da sonst bei PWM_Start die PWM-Ausgänge direkt an sind
 		// der Wert der bei compare angegeben wird ist der Wert ab dem der PWM-Ausgang auf High geht
 		// der Duty-Cycle (in Prozent als Dezimalzahl) ergibt sich dadurch durch Capture-Compare-Wert / Periodendauer
-		error_occurred1 = (int) HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
-		error_occurred2 = (int) HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+		// error_occurred1 = (int) HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+		HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+		// error_occurred2 = (int) HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+		HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 		// HAL_TIM_PWM_Start returns enum ("HAL_StatusTypeDef") with value 0 (=no error), 1, 2 or 3 (=error)
 		// -> stm32f7xx_hal_def.h lign 38
+		/*
 		if (error_occurred1 != 0 || error_occurred2 != 0)
 		{
 			error_variable = true;
 			// printf("error occured in SPINDLE_EnaPWM function"\n);
 			return;
 		}
+		*/
 
 		// C-Makros fuer die Pins -> siehe main.h
 		// enable H-Bruecke

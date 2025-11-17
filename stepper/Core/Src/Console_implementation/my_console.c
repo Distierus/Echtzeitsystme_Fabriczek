@@ -56,13 +56,15 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 
 // create the console processor. There are no additional arguments required because it uses stdin, stderr and
 // stdout of the stdlib of the platform
-ConsoleHandle_t c =  NULL;
+ConsoleHandle_t console_handle =  NULL;
 void MyConsole_Init(void)
 {
     // Jetzt die Instanz zur Laufzeit erstellen und der globalen Variable zuweisen
-    c = CONSOLE_CreateInstance( 4 * configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 5 );
+    console_handle = CONSOLE_CreateInstance( 4 * configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 5 );
 
     // Befehl registrieren, nachdem die Instanz erstellt wurde
-    CONSOLE_RegisterCommand(c, "capability", "prints a specified string of capability bits",
-      CapabilityFunc, NULL);
+    CONSOLE_RegisterCommand(console_handle, "capability", "prints a specified string of capability bits", CapabilityFunc, NULL);
+
+    // Spindle initialisieren
+    Initialize_Spindle(console_handle);
 }

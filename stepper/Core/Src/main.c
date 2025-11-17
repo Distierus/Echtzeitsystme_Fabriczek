@@ -184,7 +184,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   initialise_stdlib_abstraction();
   MyConsole_Init();
-  vTaskStartScheduler(); // Abdull-Hilfe
+  vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */
