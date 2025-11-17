@@ -38,8 +38,6 @@ static int reset_stepper(void)
 	L6474_SetBaseParameter(&base_parameter);
 }
 
-//TODO
-
 // from LibL6474 library documentation:
 // pass all function pointers required by the stepper library
 // to a separate platform abstraction structure
