@@ -70,5 +70,5 @@ void MyConsole_Init(void)
     Initialize_Spindle(console_handle);
 
     // Stepper initialisieren
-    Initialize_Stepper();
+    // Initialize_Stepper();
 }
