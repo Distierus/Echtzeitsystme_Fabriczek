@@ -17,4 +17,6 @@ void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int backward);
 void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float dutyCycle);
 void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena);
 
+void Initialize_Spindle(ConsoleHandle_t c);
+
 #endif

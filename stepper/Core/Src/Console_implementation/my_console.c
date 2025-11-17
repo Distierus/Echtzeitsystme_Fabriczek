@@ -4,10 +4,11 @@
  *  Created on: Oct 28, 2025
  *      Author: Theo Schreiber
  */
-#include "my_console.h"
+#include "Console_implementation/my_console.h"
 #include "Console.h"
 #include "ConsoleConfig.h"
 #include "FreeRTOSConfig.h"
+#include "Spindle_implementation/my_spindle.h"
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -67,4 +68,7 @@ void MyConsole_Init(void)
 
     // Spindle initialisieren
     Initialize_Spindle(console_handle);
+
+    // Stepper initialisieren
+    Initialize_Stepper();
 }

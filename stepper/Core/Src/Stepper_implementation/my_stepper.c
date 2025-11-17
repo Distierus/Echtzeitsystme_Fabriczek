@@ -1,5 +1,5 @@
 #include "main.h"
-#include "init.h"
+#include "Console_implementation/my_console.h"
 #include "LibL6474.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -20,7 +20,7 @@
 // Das ist quasi unser globales "Gehirn" für den Motor.
 // Hier speichern wir den ganzen Zustand, die Handles und die Konfiguration.
 typedef struct {
-    L6474_Handle_t h;       // Das Handle für die L6474-Bibliothek
+    L6474_Handle_t h;       // Handle für die L6474-Bibliothek
     int is_powered;         // Ist der Motor bestromt? (High-Z oder nicht)
     int is_referenced;      // Haben wir die Home-Position gefunden?
     int is_running;         // Bewegt sich der Motor gerade?
@@ -780,7 +780,7 @@ static int StepTimerCancelAsync(void* pPWM)
     return 0;
 }
 
-void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1, TIM_HandleTypeDef* tim1_handle, TIM_HandleTypeDef* tim4_handle){
+void Initialize_Stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1, TIM_HandleTypeDef* tim1_handle, TIM_HandleTypeDef* tim4_handle){
     // Die große Initialisierungsfunktion. Wird einmal beim Start aufgerufen.
 
     HAL_GPIO_WritePin(STEP_SPI_CS_GPIO_Port, STEP_SPI_CS_Pin, 1); // CS Pin High (default)

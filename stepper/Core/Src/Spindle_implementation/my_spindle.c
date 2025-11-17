@@ -5,7 +5,7 @@
  *      Author: Basti
  */
 #include "main.h"
-#include "my_spindle.h" // own Spindle-Header file
+#include "Spindle_implementation/my_spindle.h" // own Spindle-Header file
 #include "Spindle.h"	// from LibSpindle
 #include "Console.h"	// fuer ConsoleHandle_t
 #include "FreeRTOSConfig.h"
@@ -21,10 +21,12 @@ static int8_t current_spindle_direction = 1;
 float current_spindle_duty_cycle = 0;
 
 //Hardwarespezifische Funktionen
+/*
 void init_Spindle(void){
 	//initialise all neccessary Harware Components to use Spindle
 	//TODO
 }
+*/
 
 void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int backward){
 	//Hardware Funktion um Rotationsrichtung zu bestimmen
