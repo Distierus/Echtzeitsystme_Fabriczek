@@ -14,6 +14,7 @@
 #include <stdio.h>		// fuer printf Output -> newlib liefert die selben Ergebnisse wie stdio.h ist aber spezifischer
 						// -> dadurch waere dieses Projekt nicht auf andere Microcontroller portierbar
 
+// test
 extern bool error_variable;
 extern TIM_HandleTypeDef htim2; // wird in main.c definiert
 // direction 0 == vorwaerts, 1 == zurueck
