@@ -2,7 +2,7 @@
  * my_console.c
  *
  *  Created on: Oct 28, 2025
- *      Author: Theo Schreiber
+ *      Author: Basti
  */
 #include "Console_implementation/my_console.h"
 #include "Console.h"
@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <main.h>
+#include <task.h> // wichtig für vTaskDelay() !!!
 
 extern bool error_variable;
 extern L6474_Handle_t stepperHandle;
