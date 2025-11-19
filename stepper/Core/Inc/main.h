@@ -93,8 +93,6 @@ void Error_Handler(void);
 #define DEBUG_UART_RX_GPIO_Port GPIOD
 #define STEP_SPI_CS_Pin GPIO_PIN_14
 #define STEP_SPI_CS_GPIO_Port GPIOD
-#define STEP_PULSE_Pin GPIO_PIN_15
-#define STEP_PULSE_GPIO_Port GPIOD
 #define LED_BLUE_Pin GPIO_PIN_7
 #define LED_BLUE_GPIO_Port GPIOB
 #define REFERENCE_MARK_Pin GPIO_PIN_8
