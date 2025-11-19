@@ -21,11 +21,11 @@ extern int asyncStepsRemaining;
 extern L6474_Handle_t asyncStepperHandle;
 extern void (*asyncDoneCallback)(L6474_Handle_t);
 extern TIM_HandleTypeDef htim4;
+extern L6474_BaseParameter_t base_parameter;
 
 void Initialize_Stepper(void)
 {
-	L6474_BaseParameter_t base_parameter;
-	L6474_SetBaseParameter(&base_parameter);
+
 
 	// einstellen, dass Stepper max. 0.6A ziehen darf
 	L6474_EncodePhaseCurrentParameter(&base_parameter, 600.0f);

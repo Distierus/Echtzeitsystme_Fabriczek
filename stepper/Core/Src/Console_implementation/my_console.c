@@ -25,7 +25,7 @@ int doneReference = 0; // bevor reference Fahrt nicht gemacht wurde, darf Steppe
 extern int blueLedBlinking;
 int steps = 0; // for calculation of steps
 float sec_per_min = 60.0f;
-// extern L6474_BaseParameter_t base_parameter;
+extern L6474_BaseParameter_t base_parameter;
 
 
 // register the function, there is always a help text required, an empty string or null is not allowed!

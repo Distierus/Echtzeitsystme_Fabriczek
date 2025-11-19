@@ -36,6 +36,7 @@
 #include "Console_implementation/my_console.h"
 #include "Stepper_implementation/my_stepper.h"
 #include "LibL6474.h"
+#include "LibL6474Config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,11 +70,11 @@ int asyncStepsRemaining = 0;
 L6474_Handle_t asyncStepperHandle = NULL;
 void (*asyncDoneCallback)(L6474_Handle_t) = NULL;
 
-// L6474_BaseParameter_t base_parameter;
+// globale Variable fuer my_console.c und my_stepper.c
+L6474_BaseParameter_t base_parameter;
 
 //Globale Flag für LED-Steuerung
 int blueLedBlinking = 0;
-
 
 // bool variable to show errors
 bool error_variable = false;
@@ -195,6 +196,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  L6474_SetBaseParameter(&base_parameter);
+
   initialise_stdlib_abstraction();
   MyConsole_Init();
   xTaskCreate(vLedBlinkTask, "LED_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
