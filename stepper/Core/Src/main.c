@@ -19,23 +19,24 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 /* Standard C headers */
 #include <stdio.h>
 #include <assert.h>
+#include <stdbool.h>
 
 /* FreeRTOS headers */
 #include "FreeRTOS.h"
 #include "task.h"
 // #include "semphr.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "FreeRTOSConfig.h"
 #include "Spindle_implementation/my_spindle.h"
 #include "Console_implementation/my_console.h"
+#include "Stepper_implementation/my_stepper.h"
+#include "LibL6474.h"
 /* USER CODE END Includes */
-
-#include <stdbool.h>
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
@@ -62,10 +63,20 @@ TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart3;
 
-// bool variable to
-bool error_variable = false;
-
 /* USER CODE BEGIN PV */
+// Globale Variablen für asynchrone Bewegung
+int asyncStepsRemaining = 0;
+L6474_Handle_t asyncStepperHandle = NULL;
+void (*asyncDoneCallback)(L6474_Handle_t) = NULL;
+
+// L6474_BaseParameter_t base_parameter;
+
+//Globale Flag für LED-Steuerung
+int blueLedBlinking = 0;
+
+
+// bool variable to show errors
+bool error_variable = false;
 
 /* USER CODE END PV */
 
@@ -104,6 +115,7 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 // --------------------------------------------------------------------------------------------------------------------
+/*
 static int CapabilityFunc( int argc, char** argv, void* ctx )
 // --------------------------------------------------------------------------------------------------------------------
 {
@@ -141,6 +153,7 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 	);
 	return 0;
 }
+*/
 
 /* USER CODE END 0 */
 
@@ -184,6 +197,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
   initialise_stdlib_abstraction();
   MyConsole_Init();
+  xTaskCreate(vLedBlinkTask, "LED_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+
+  // everything before scheduler
   vTaskStartScheduler();
   /* USER CODE END 2 */
 
@@ -444,7 +460,6 @@ static void MX_TIM4_Init(void)
   /* USER CODE END TIM4_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_SlaveConfigTypeDef sSlaveConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
@@ -454,7 +469,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 127;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 5624;
+  htim4.Init.Period = 62;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -470,12 +485,6 @@ static void MX_TIM4_Init(void)
   {
     Error_Handler();
   }
-  sSlaveConfig.SlaveMode = TIM_SLAVEMODE_GATED;
-  sSlaveConfig.InputTrigger = TIM_TS_ITR0;
-  if (HAL_TIM_SlaveConfigSynchro(&htim4, &sSlaveConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
@@ -483,7 +492,7 @@ static void MX_TIM4_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 2812;
+  sConfigOC.Pulse = 31;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
