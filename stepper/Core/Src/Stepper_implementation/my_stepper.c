@@ -9,8 +9,9 @@
 
 // in main.c definiert
 extern SPI_HandleTypeDef hspi1;
+int blueLedBlinking = 0;
 
-static void Initialize_Stepper(void)
+void Initialize_Stepper(void)
 {
 	L6474_BaseParameter_t base_parameter;
 	L6474_SetBaseParameter(&base_parameter);
@@ -49,20 +50,20 @@ static void Initialize_Stepper(void)
 }
 
 // from LibL6474 library documentation
-static void* StepLibraryMalloc( unsigned int size )
+void* StepLibraryMalloc( unsigned int size )
 {
 	// size	number of bytes requested by the memory allocation request
 	return malloc(size);
 }
 
 // from LibL6474 library documentation
-static void StepLibraryFree( const void* const ptr )
+void StepLibraryFree( const void* const ptr )
 {
 	free((void*)ptr);
 }
 
 // from LibL6474 library documentation
-static int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigned int length )
+int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigned int length )
 {
 	// byte based access, so keep in mind that only single byte transfers are performed!
 	// siehe stm32f7xx_hal_def.h Z. 38
@@ -92,20 +93,20 @@ static int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigne
 	return 0;
 }
 
-static void StepDriverReset(void *pGPO, const int ena)
+void StepDriverReset(void *pGPO, const int ena)
 {
 	// the reset function is used to provide gpio access to the reset of the stepper driver chip.
 	// the chip has a reset not pin and so the ena signal must be inverted to set the correct reset level physically
 	HAL_GPIO_WritePin(STEP_RSTN_GPIO_Port, STEP_RSTN_Pin, !ena);
 }
 
-static void StepLibraryDelay(unsigned int ms)
+void StepLibraryDelay(unsigned int ms)
 {
 	// damit keine anderen Tasks ausgefuehrt werden koennen -> Dispatcher kann keinen anderen Task anbieten
 	vTaskDelay(ms);
 }
 
-static int StepTimerAsync(void *pPWM, int dir, unsigned int numPulses, void(*doneClb)(L6474_Handle_t), L6474_Handle_t h)
+int StepTimerAsync(void *pPWM, int dir, unsigned int numPulses, void(*doneClb)(L6474_Handle_t), L6474_Handle_t h)
 {
 	(void)pPWM;
 
@@ -121,7 +122,7 @@ static int StepTimerAsync(void *pPWM, int dir, unsigned int numPulses, void(*don
 	return 0;
 }
 
-static int StepTimerCancelAsync(void *pPWM)
+int StepTimerCancelAsync(void *pPWM)
 {
 	HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
 	return 0;
@@ -130,7 +131,10 @@ static int StepTimerCancelAsync(void *pPWM)
 // konfiguriert den Timer -> Timer entscheidet, wie schnell PWM Signal ist
 void SetStepperSpeed(float steps_per_sec)
 {
-    if (steps_per_sec <= 0) return;
+    if (steps_per_sec <= 0)
+    {
+    	return;
+    }
 
     uint16_t prescaler, arr;
     FindOptimalTimerSettings(steps_per_sec, 90000000, &prescaler, &arr);
@@ -145,12 +149,14 @@ void SetStepperSpeed(float steps_per_sec)
 }
 
 // findet die optimalen Timer Einstellungen, damit Schrittmotor vernünftig läuft
-void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t *out_prescaler, uint16_t *out_arr) {
+void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t *out_prescaler, uint16_t *out_arr)
+{
     float best_error = 1e9;
     uint16_t best_prescaler = 0;
     uint16_t best_arr = 0;
 
-    for (uint16_t prescaler = 1; prescaler <= 1000; prescaler++) {
+    for (uint16_t prescaler = 1; prescaler <= 1000; prescaler++)
+    {
         float temp = (float)timer_clk / (prescaler * steps_per_sec);
         uint16_t arr = (uint16_t)(temp + 0.5f) - 1;
 
@@ -178,20 +184,25 @@ void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t 
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim == &htim4) {
+    if (htim == &htim4)
+    {
         //Limit-Schalter prüfen
-        if (HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) == GPIO_PIN_RESET) {
+        if (HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) == GPIO_PIN_RESET)
+        {
             HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
             printf("Fail: Async movement stopped due to limit switch\r\n");
-            if (asyncDoneCallback && asyncStepperHandle) {
+            if (asyncDoneCallback && asyncStepperHandle)
+            {
                 asyncDoneCallback(asyncStepperHandle);
             }
             return;
         }
 
-        if (asyncStepsRemaining <= 1) {
+        if (asyncStepsRemaining <= 1)
+        {
             HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
-            if (asyncDoneCallback && asyncStepperHandle) {
+            if (asyncDoneCallback && asyncStepperHandle)
+            {
                 asyncDoneCallback(asyncStepperHandle);
             }
             return;
@@ -202,10 +213,12 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 
 // Helferfunktion zur Aktivierung der Treiber (und LEDs)
 // TODO: kommentieren
-int EnableStepperDrivers(void) {
+int EnableStepperDrivers(void)
+{
     L6474_Status_t status;
     // Status holen, um zu prüfen, ob Treiber schon aktiv sind
-    if (L6474_GetStatus(stepperHandle, &status) != errcNONE) {
+    if (L6474_GetStatus(stepperHandle, &status) != errcNONE)
+    {
         // LED FEHLER [cite: 399]
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
@@ -214,9 +227,11 @@ int EnableStepperDrivers(void) {
     }
 
     // Prüfen, ob Treiber im High-Z (AUS) sind
-    if (status.HIGHZ) {
+    if (status.HIGHZ)
+    {
         printf("Enabling power outputs...\r\n");
-        if (L6474_SetPowerOutputs(stepperHandle, 1) != errcNONE) {
+        if (L6474_SetPowerOutputs(stepperHandle, 1) != errcNONE)
+        {
             // LED FEHLER [cite: 399]
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
@@ -231,4 +246,28 @@ int EnableStepperDrivers(void) {
     }
     // Falls Treiber schon aktiv waren, blinkt Blau bereits, nichts zu tun.
     return 0; // Erfolg
+}
+
+
+// Task fuer die blaue LED
+void vLedBlinkTask(void* pvParameters)
+{
+  (void)pvParameters;
+
+  while(1)
+  {
+	  if (blueLedBlinking)
+	  {
+		  // Blaue LED 1Hz blinken (500ms an, 500ms aus)
+		  HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+		  vTaskDelay(pdMS_TO_TICKS(500));
+	  }
+
+	  else
+	  {
+		  // Wenn Blinken deaktiviert ist, LED ausschalten und kurz warten
+		  HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET);
+		  vTaskDelay(pdMS_TO_TICKS(100)); // Poll-Intervall
+	  }
+  }
 }

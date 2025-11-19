@@ -15,6 +15,9 @@
 
 extern bool error_variable;
 extern L6474_Handle_t stepperHandle;
+int doneReference = 0; // bevor reference Fahrt nicht gemacht wurde, darf Stepper nicht auf absolute Position 0 fahren
+extern blueLedBlinking;
+
 
 // register the function, there is always a help text required, an empty string or null is not allowed!
 static int CapabilityFunc( int argc, char** argv, void* ctx )
@@ -178,10 +181,10 @@ int StepperCommand(int argc, char **argv, void *context)
     else if(strcmp(argv[0], "reference") == 0) {
     	float speed_mm_per_min = 500.0f;
     	const int steps_per_turn = 200;
-    	    const int microsteps = 16;
-    	    const float mm_per_turn = 4.0f;
-    	    float steps_per_sec = CalculateStepsPerSecond(speed_mm_per_min, steps_per_turn, microsteps, mm_per_turn);
-    	            SetStepperSpeed(steps_per_sec);
+		const int microsteps = 16;
+		const float mm_per_turn = 4.0f;
+		float steps_per_sec = speed_mm_per_min * (steps_per_turn * microsteps) / (mm_per_turn * sec_per_min);
+		SetStepperSpeed(steps_per_sec);
 
         if (EnableStepperDrivers() != 0) {
             printf("Fail: Could not enable drivers\r\n");
@@ -190,13 +193,16 @@ int StepperCommand(int argc, char **argv, void *context)
 
         L6474_StepIncremental(stepperHandle, -10000000);
 
+        // da synchrone Fahrt wird immer noch abgefragt, ob der Schrittmotor sich noch bewegt
+        // solange Motor sich noch bewegt ist moving = 1
         int moving = 1;
         while (moving == 1) {
             if (HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET) {
                 L6474_StopMovement(stepperHandle);
                 L6474_SetPositionMark(stepperHandle, 0);
                 L6474_SetAbsolutePosition(stepperHandle, 0);
-                doneReference = 1;
+                // doneReference = 1; // es soll geschaut werden,
+                // ob Referenzfahrt vor absoluter Fahrt zu 0 schon gemacht wurde
                 printf("Ok, Reference found and position set to 0\r\n");
                 return 0;
             }
@@ -205,11 +211,12 @@ int StepperCommand(int argc, char **argv, void *context)
             vTaskDelay(100);
         }
 
+        // falls Schrittmotor nicht an Referenzpunkt angekommen ist wird while-loop verlassen
         printf("Fail: Reference movement stopped unexpectedly\r\n");
         return -1;
     }
 
-    // POSITION: Ausgabe in mm
+    // Abfrage fuer subcommand "position": Ausgabe in mm
     else if(strcmp(argv[0], "position") == 0) {
         int steps;
         if (L6474_GetAbsolutePosition(stepperHandle, &steps) != errcNONE) {
@@ -222,7 +229,7 @@ int StepperCommand(int argc, char **argv, void *context)
         return 0;
     }
 
-    // STATUS
+    // Abfrage fuer subcommand "status"
     else if(strcmp(argv[0], "status") == 0) {
         L6474_Status_t status;
         if (L6474_GetStatus(stepperHandle, &status) != errcNONE) {
@@ -230,6 +237,7 @@ int StepperCommand(int argc, char **argv, void *context)
             return -1;
         }
 
+        // unterschiedliche Werte des Status structs werden auf der Konsole ausgegeben
         printf("Ok, Stepper status:\r\n");
         printf("  HIGHZ      : %d\r\n", status.HIGHZ);
         printf("  DIR        : %d\r\n", status.DIR);
@@ -240,11 +248,12 @@ int StepperCommand(int argc, char **argv, void *context)
         return 0;
     }
 
-    // RESET
+    // Abfrage fuer subcommand "reset"
+    // TODO: Loesung suchen
     else if(strcmp(argv[0], "reset") == 0) {
         printf("Ok, Resetting stepper...\r\n");
         if(L6474_ResetStandBy(stepperHandle) != errcNONE ||
-           L6474_Initialize(stepperHandle, &baseParams) != errcNONE) {
+           L6474_Initialize(stepperHandle, &base_parameter) != errcNONE) {
             printf("Fail: Reset or re-init failed\r\n");
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
@@ -258,7 +267,7 @@ int StepperCommand(int argc, char **argv, void *context)
         return 0;
     }
 
-    // CANCEL
+    // Abfrage fuer subcommand "cancel" (nur fuer asynchrone Fahrt)
     else if(strcmp(argv[0], "cancel") == 0) {
         if (L6474_StopMovement(stepperHandle) != errcNONE) {
             printf("Fail: Could not cancel movement\r\n");
