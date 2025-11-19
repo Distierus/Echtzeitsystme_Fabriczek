@@ -9,10 +9,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
-#include "Projdefs.h"
+#include <math.h> // wichtig für fabsf Funktion
+#include <task.h> // wichtig für vTaskDelay() !!!
 
-int blueLedBlinking = 0;
+extern int blueLedBlinking;
 L6474_Handle_t stepperHandle;
 
 // in main.c definiert
