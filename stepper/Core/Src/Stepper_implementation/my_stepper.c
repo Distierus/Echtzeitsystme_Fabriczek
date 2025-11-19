@@ -1,3 +1,9 @@
+/*
+ * my_stepper.c
+ *
+ *  Created on: Nov 16, 2025
+ *      Author: Basti
+ */
 #include "Stepper_implementation/my_stepper.h"
 #include "Controller.h"
 #include "LibL6474.h"
@@ -12,7 +18,6 @@
 #include <math.h> // wichtig für fabsf Funktion
 #include <task.h> // wichtig für vTaskDelay() !!!
 
-extern int blueLedBlinking;
 L6474_Handle_t stepperHandle;
 
 // in main.c definiert
@@ -22,6 +27,7 @@ extern L6474_Handle_t asyncStepperHandle;
 extern void (*asyncDoneCallback)(L6474_Handle_t);
 extern TIM_HandleTypeDef htim4;
 extern L6474_BaseParameter_t base_parameter;
+extern int blueLedBlinking;
 
 void Initialize_Stepper(void)
 {
@@ -48,7 +54,7 @@ void Initialize_Stepper(void)
 	p.cancelStep = StepTimerCancelAsync;
 
 
-	// now create the handle
+	// create the handle
 	stepperHandle = L6474_CreateInstance(&p, NULL, NULL, NULL);
 	if (stepperHandle == NULL)
 	{
@@ -73,7 +79,7 @@ void StepLibraryFree( const void* const ptr )
 	free((void*)ptr);
 }
 
-// from LibL6474 library documentation
+// from LibL6474 library documentation (extended with own code)
 int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigned int length )
 {
 	// byte based access, so keep in mind that only single byte transfers are performed!
@@ -90,7 +96,7 @@ int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigned int l
 		// 1 Byte versenden und 1 Byte empfangen, HAL_MAX_DELAY aus stm32f7xx_hal_def.h Z. 61
 		errorcode = HAL_SPI_TransmitReceive(&hspi1, (uint8_t*) &(pTX[i]), (uint8_t*) &(pRX[i]), 1, HAL_MAX_DELAY);
 
-		// bringe Chips Select hight to end data transfer
+		// bringe Chips Select high to end data transfer
 		HAL_GPIO_WritePin(STEP_SPI_CS_GPIO_Port, STEP_SPI_CS_Pin, 1);
 
 		if (errorcode != HAL_OK)
@@ -99,7 +105,10 @@ int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigned int l
 			return -1;
 		}
 	}
-	// TODO: if something is not working put CS High command here
+	// TODO: if something is not working put CS High command here -> HAL...(..., STEP_SPI_CS_Pin, 1);
+
+	// da pIO nicht verwendet wird -> keine Compiler-Warnungen
+	(void) pIO;
 
 	return 0;
 }
@@ -109,6 +118,9 @@ void StepDriverReset(void *pGPO, const int ena)
 	// the reset function is used to provide gpio access to the reset of the stepper driver chip.
 	// the chip has a reset not pin and so the ena signal must be inverted to set the correct reset level physically
 	HAL_GPIO_WritePin(STEP_RSTN_GPIO_Port, STEP_RSTN_Pin, !ena);
+
+	// da pGPO nicht verwendet wird -> keine Compiler-Warnungen
+	(void)pGPO;
 }
 
 void StepLibraryDelay(unsigned int ms)
@@ -119,6 +131,7 @@ void StepLibraryDelay(unsigned int ms)
 
 int StepTimerAsync(void *pPWM, int dir, unsigned int numPulses, void(*doneClb)(L6474_Handle_t), L6474_Handle_t h)
 {
+	// da pPWM nicht genutzt wird -> keine Compiler-Warnungen
 	(void)pPWM;
 
 	// Richtung setzen
@@ -136,6 +149,10 @@ int StepTimerAsync(void *pPWM, int dir, unsigned int numPulses, void(*doneClb)(L
 int StepTimerCancelAsync(void *pPWM)
 {
 	HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
+
+	// damit keine Compiler-Warnungen entstehen, da pPWM nicht genutzt wird:
+	(void)pPWM;
+
 	return 0;
 }
 
@@ -185,7 +202,8 @@ void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t 
         // Kombiniertes Bewertungskriterium
         float score = error + balance * 0.01f;
 
-        if (score < best_error) {
+        if (score < best_error)
+        {
             best_error = score;
             best_prescaler = prescaler - 1;
             best_arr = arr;
@@ -268,10 +286,11 @@ int EnableStepperDrivers(void)
 // Task fuer die blaue LED
 void vLedBlinkTask(void* pvParameters)
 {
-  (void)pvParameters;
+	// da pvParameters nicht genutzt wird: -> somit keine Compiler-Warnungen
+	(void)pvParameters;
 
-  while(1)
-  {
+	while (1)
+	{
 	  if (blueLedBlinking)
 	  {
 		  // Blaue LED 1Hz blinken (500ms an, 500ms aus)
@@ -285,5 +304,5 @@ void vLedBlinkTask(void* pvParameters)
 		  HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET);
 		  vTaskDelay(pdMS_TO_TICKS(100)); // Poll-Intervall
 	  }
-  }
+	}
 }

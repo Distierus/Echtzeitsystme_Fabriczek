@@ -24,13 +24,16 @@ float current_spindle_duty_cycle = 0;
 /*
 void init_Spindle(void){
 	//initialise all neccessary Harware Components to use Spindle
-	//TODO
 }
 */
 
 void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int backward){
 	//Hardware Funktion um Rotationsrichtung zu bestimmen
 	current_spindle_direction = (int8_t) backward;
+
+	// da context und h nicht verwendet werden
+	(void)context;
+	(void)h;
 }
 
 void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float dutyCycle){
@@ -48,14 +51,18 @@ void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float dutyCycle){
 		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 0); // SPINDLE_PWM_L
 		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, current_spindle_duty_cycle * 4499); // SPINDLE_PWM_R
 	}
+
+	// da context und h nicht verwendet werden
+	(void)context;
+	(void)h;
 }
 
 void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
 	//Switch PWM on or off -> Switch Spindle on or off
 
 	// check if enabling PWM-Signal is successful
-	uint8_t error_occurred1 = 0;
-	uint8_t error_occurred2 = 0;
+	// uint8_t error_occurred1 = 0;
+	// uint8_t error_occurred2 = 0;
 
 	// die GPIO-Pins benutzen den Timer 2, Channel 3 und 4 -> siehe main.c: htim2 für TIM_HandleTypeDef
 	// die HAL-Makros für die Channel in Drivers->...HAL_Driver->Inc->...hal_tim.h gefunden
@@ -99,6 +106,10 @@ void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int ena){
 		HAL_GPIO_WritePin(SPINDLE_ENA_L_GPIO_Port, SPINDLE_ENA_L_Pin, ena);
 		HAL_GPIO_WritePin(SPINDLE_ENA_R_GPIO_Port, SPINDLE_ENA_R_Pin, ena);
 	}
+
+	// da context und h nicht verwendet werden
+	(void)context;
+	(void)h;
 }
 
 void Initialize_Spindle(ConsoleHandle_t c){

@@ -40,14 +40,14 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
         1, // has stepper
         1, // has stepper move relative
         1, // has stepper move speed
-        0, // has stepper move async
-        0, // has stepper status
-        0, // has stepper refrun
+        1, // has stepper move async
+        1, // has stepper status
+        1, // has stepper refrun
         0, // has stepper refrun timeout
         0, // has stepper refrun skip
         0, // has stepper refrun stay enabled
-        0, // has stepper reset
-        0, // has stepper position
+        1, // has stepper reset
+        1, // has stepper position
         0, // has stepper config
         0, // has stepper config torque
         0, // has stepper config throvercurr
@@ -61,13 +61,16 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
         0, // has stepper config posmin
         0, // has stepper config posref
         0, // has stepper config stepsperturn
-        0  // has stepper cancel
+        1  // has stepper cancel
     );
     return 0;
 }
 
 int StepperCommand(int argc, char **argv, void *context)
 {
+	// da context nicht verwendet wird
+	(void)context;
+
     // Mechanikparameter – zentral definiert, Informationen aus dem Pflichtenheft
     const int steps_per_turn = 200; // 200 Schritte pro Umdrehung, jeder Schritt hat 16 Mikrosteps
     const int microsteps = 16;	// 200 * 16 = 3200 Mikro-Schritte pro Umdrehung
@@ -166,7 +169,7 @@ int StepperCommand(int argc, char **argv, void *context)
         SetStepperSpeed(steps_per_sec);
         // ternary operator for absolute oder relative Unterscheidung
         float delta_mm = relative ? target_mm : (target_mm - current_mm);
-        //TODO: delta_mm evt. noch falsch, wenn absolute Fahrt umgesetzt wird -> fuer debugging Zwecke
+        //TODO: delta_mm evt. noch falsch, wenn absolute Fahrt umgesetzt wird -> fuer debugging Zwecke printf
         printf("Moving %.2f mm at %.2f steps/sec (%d steps)\r\n", delta_mm, steps_per_sec, steps);
 
         // Funktion die ausgefuehrt wird, damit der Schrittmotor faehrt
@@ -204,8 +207,10 @@ int StepperCommand(int argc, char **argv, void *context)
         // da synchrone Fahrt wird immer noch abgefragt, ob der Schrittmotor sich noch bewegt
         // solange Motor sich noch bewegt ist moving = 1
         int moving = 1;
-        while (moving == 1) {
-            if (HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET) {
+        while (moving == 1)
+        {
+            if (HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET)
+            {
                 L6474_StopMovement(stepperHandle);
                 L6474_SetPositionMark(stepperHandle, 0);
                 L6474_SetAbsolutePosition(stepperHandle, 0);
