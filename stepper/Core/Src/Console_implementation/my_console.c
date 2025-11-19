@@ -7,16 +7,24 @@
 #include "Console_implementation/my_console.h"
 #include "Console.h"
 #include "ConsoleConfig.h"
+#include "FreeRTOS.h"
 #include "FreeRTOSConfig.h"
+#include "LibL6474.h"
 #include "Spindle_implementation/my_spindle.h"
 #include "Stepper_implementation/my_stepper.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#include <main.h>
 
 extern bool error_variable;
 extern L6474_Handle_t stepperHandle;
 int doneReference = 0; // bevor reference Fahrt nicht gemacht wurde, darf Stepper nicht auf absolute Position 0 fahren
-extern blueLedBlinking;
+extern int blueLedBlinking;
+int steps = 0; // for calculation of steps
+float sec_per_min = 60.0f;
+// extern L6474_BaseParameter_t base_parameter;
 
 
 // register the function, there is always a help text required, an empty string or null is not allowed!
@@ -153,7 +161,6 @@ int StepperCommand(int argc, char **argv, void *context)
         // Berechnung: Schritte pro Sek. = gewuenscht. v in mm/min * Schritte (pro Umdrehung) / (mm (pro Umdrehung) * 60 sek.)
         // -> siehe Notizen OneNote
 
-        float sec_per_min = 60.0f;
         float steps_per_sec = speed_mm_per_min * (steps_per_turn * microsteps) / (mm_per_turn * sec_per_min);
         SetStepperSpeed(steps_per_sec);
         // ternary operator for absolute oder relative Unterscheidung
@@ -225,7 +232,7 @@ int StepperCommand(int argc, char **argv, void *context)
         }
 
         float pos_mm = ((float)steps * mm_per_turn) / (steps_per_turn * microsteps);
-        printf("Ok, Current absolute position: %ld steps = %.2f mm\r\n", steps, pos_mm);
+        printf("Ok, Current absolute position: %d steps = %.2f mm\r\n", steps, pos_mm);
         return 0;
     }
 
@@ -250,10 +257,12 @@ int StepperCommand(int argc, char **argv, void *context)
 
     // Abfrage fuer subcommand "reset"
     // TODO: Loesung suchen
-    else if(strcmp(argv[0], "reset") == 0) {
+    else if(strcmp(argv[0], "reset") == 0)
+    {
         printf("Ok, Resetting stepper...\r\n");
         if(L6474_ResetStandBy(stepperHandle) != errcNONE ||
-           L6474_Initialize(stepperHandle, &base_parameter) != errcNONE) {
+           L6474_Initialize(stepperHandle, &base_parameter) != errcNONE)
+        {
             printf("Fail: Reset or re-init failed\r\n");
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
@@ -267,7 +276,7 @@ int StepperCommand(int argc, char **argv, void *context)
         return 0;
     }
 
-    // Abfrage fuer subcommand "cancel" (nur fuer asynchrone Fahrt)
+    // Abfrage fuer sub command "cancel" (nur fuer asynchrone Fahrt)
     else if(strcmp(argv[0], "cancel") == 0) {
         if (L6474_StopMovement(stepperHandle) != errcNONE) {
             printf("Fail: Could not cancel movement\r\n");
@@ -277,7 +286,7 @@ int StepperCommand(int argc, char **argv, void *context)
         return 0;
     }
 
-    printf("Fail: Unknown Stepper subcommand\r\n");
+    printf("Fail: Unknown Stepper sub command\r\n");
     return -1;
 }
 

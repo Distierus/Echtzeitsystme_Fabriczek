@@ -15,11 +15,11 @@ void StepLibraryDelay(unsigned int ms);
 int StepTimerAsync(void *pPWM, int dir, unsigned int numPulses, void(*doneClb)(L6474_Handle_t), L6474_Handle_t h);
 int StepTimerCancelAsync(void *pPWM);
 
-// own functions - brauche ich dir ueberhaupt noch?:
+// own functions
 void Initialize_Stepper(void);
 void SetStepperSpeed(float steps_per_sec);
 void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t *out_prescaler, uint16_t *out_arr);
-void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim);
+// void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim);
 int EnableStepperDrivers(void);
 void vLedBlinkTask(void* pvParameters);
 

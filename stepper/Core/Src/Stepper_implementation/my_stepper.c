@@ -2,14 +2,25 @@
 #include "Controller.h"
 #include "LibL6474.h"
 #include "LibL6474Config.h"
+#include "FreeRTOS.h"
 #include "FreeRTOSConfig.h"
 #include "main.h"
-#include "stdint.h"
-#include "stdlib.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
+#include "Projdefs.h"
+
+int blueLedBlinking = 0;
+L6474_Handle_t stepperHandle;
 
 // in main.c definiert
 extern SPI_HandleTypeDef hspi1;
-int blueLedBlinking = 0;
+extern int asyncStepsRemaining;
+extern L6474_Handle_t asyncStepperHandle;
+extern void (*asyncDoneCallback)(L6474_Handle_t);
+extern TIM_HandleTypeDef htim4;
 
 void Initialize_Stepper(void)
 {
@@ -38,7 +49,7 @@ void Initialize_Stepper(void)
 
 
 	// now create the handle
-	L6474_Handle_t stepperHandle = L6474_CreateInstance(&p, NULL, NULL, NULL);
+	stepperHandle = L6474_CreateInstance(&p, NULL, NULL, NULL);
 	if (stepperHandle == NULL)
 	{
 		printf("error at creating instance in my_stepper.c\n");
@@ -160,10 +171,13 @@ void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t 
         float temp = (float)timer_clk / (prescaler * steps_per_sec);
         uint16_t arr = (uint16_t)(temp + 0.5f) - 1;
 
-        if (arr > 65535 || arr == 0) continue;
+        if (arr == 0)
+        {
+        	continue;
+        }
 
         float actual_freq = (float)timer_clk / (prescaler * (arr + 1));
-        float error = fabsf(actual_freq - steps_per_sec);
+        float error = fabsf(actual_freq - steps_per_sec); // fabsf berechnet den absoluten Wert von dem Argument
 
         // Naehe zwischen Prescaler und ARR soll moeglichst klein sein, damit move so klein wie moeglich ist
         float balance = fabsf((float)prescaler - (float)arr);
@@ -182,6 +196,7 @@ void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t 
     *out_arr = best_arr;
 }
 
+/*
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim == &htim4)
@@ -210,6 +225,7 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
         asyncStepsRemaining--;
     }
 }
+*/
 
 // Helferfunktion zur Aktivierung der Treiber (und LEDs)
 // TODO: kommentieren
