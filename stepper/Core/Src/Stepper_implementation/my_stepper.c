@@ -64,6 +64,8 @@ void Initialize_Stepper(void)
 		HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, 0);
 		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
 	}
+
+
 }
 
 // from LibL6474 library documentation
