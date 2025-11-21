@@ -78,6 +78,7 @@ int blueLedBlinking = 0;
 
 // bool variable to show errors
 bool error_variable = false;
+bool debugging_variable = false;
 
 /* USER CODE END PV */
 
@@ -201,6 +202,7 @@ int main(void)
   initialise_stdlib_abstraction();
   MyConsole_Init();
   xTaskCreate(vLedBlinkTask, "LED_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+
 
   // everything before scheduler
   vTaskStartScheduler();

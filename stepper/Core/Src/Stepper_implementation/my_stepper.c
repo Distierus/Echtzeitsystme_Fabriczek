@@ -216,13 +216,13 @@ void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t 
     *out_arr = best_arr;
 }
 
-/*
+
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim == &htim4)
     {
-        //Limit-Schalter prüfen
-        if (HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) == GPIO_PIN_RESET)
+        //Limit-Schalter prüfen und ob der Schrittmotor sich nach rechts bewegt
+        if (HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) && (HAL_GPIO_ReadPin(STEP_DIR_GPIO_Port, STEP_DIR_Pin) == 1))
         {
             HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
             printf("Fail: Async movement stopped due to limit switch\r\n");
@@ -245,7 +245,7 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
         asyncStepsRemaining--;
     }
 }
-*/
+
 
 // Helferfunktion zur Aktivierung der Treiber (und LEDs)
 // TODO: kommentieren
