@@ -200,7 +200,7 @@ int main(void)
 
   initialise_stdlib_abstraction();
   MyConsole_Init();
-  xTaskCreate(vLedBlinkTask, "LED_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(vLedBlinkTask, "LED_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 4, NULL);
 
 
   // everything before scheduler

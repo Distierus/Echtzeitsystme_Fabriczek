@@ -256,6 +256,8 @@ int EnableStepperDrivers(void)
         // LED FEHLER [cite: 399]
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+        // for debugging
+        printf("blueLedBlinking disabled1\n");
         blueLedBlinking = 0;
         return -1; // Fehler
     }
@@ -269,12 +271,16 @@ int EnableStepperDrivers(void)
             // LED FEHLER [cite: 399]
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+            // for debugging
+            printf("blueLedBlinking disabled1\n");
             blueLedBlinking = 0;
             return -1; // Fehler
         }
 
         // LED AKTIV (Grün AN, Blau blinkt) [cite: 309, 397-398]
         blueLedBlinking = 1;
+        // for debugging
+        printf("blueLedBlinking enabled\n");
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
     }

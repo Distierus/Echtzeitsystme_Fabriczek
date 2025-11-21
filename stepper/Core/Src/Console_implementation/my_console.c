@@ -213,6 +213,7 @@ int StepperCommand(int argc, char **argv, void *context)
 		float steps_per_sec = speed_mm_per_min * (steps_per_turn * microsteps) / (mm_per_turn * sec_per_min);
 		SetStepperSpeed(steps_per_sec);
 
+
         if (EnableStepperDrivers() != 0)
         {
             printf("FAIL: Could not enable drivers\r\n");
@@ -293,13 +294,14 @@ int StepperCommand(int argc, char **argv, void *context)
             printf("FAIL: Reset or re-init failed\r\n");
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+            printf("blueLedBlinking disabled3\n");
             blueLedBlinking = 0;
             return -1;
         }
 
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
-        blueLedBlinking = 0;
+        blueLedBlinking = 1;
         return 0;
     }
 
