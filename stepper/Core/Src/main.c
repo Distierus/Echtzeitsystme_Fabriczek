@@ -78,7 +78,6 @@ int blueLedBlinking = 0;
 
 // bool variable to show errors
 bool error_variable = false;
-bool debugging_variable = false;
 
 /* USER CODE END PV */
 
@@ -630,17 +629,27 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(STEP_SPI_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : REFERENCE_MARK_Pin LIMIT_SWITCH_Pin */
-  GPIO_InitStruct.Pin = REFERENCE_MARK_Pin|LIMIT_SWITCH_Pin;
+  /*Configure GPIO pin : REFERENCE_MARK_Pin */
+  GPIO_InitStruct.Pin = REFERENCE_MARK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(REFERENCE_MARK_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LIMIT_SWITCH_Pin */
+  GPIO_InitStruct.Pin = LIMIT_SWITCH_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(LIMIT_SWITCH_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPINDLE_SI_L_Pin */
   GPIO_InitStruct.Pin = SPINDLE_SI_L_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SPINDLE_SI_L_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

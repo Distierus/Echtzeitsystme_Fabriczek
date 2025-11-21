@@ -99,6 +99,7 @@ void Error_Handler(void);
 #define REFERENCE_MARK_GPIO_Port GPIOB
 #define LIMIT_SWITCH_Pin GPIO_PIN_9
 #define LIMIT_SWITCH_GPIO_Port GPIOB
+#define LIMIT_SWITCH_EXTI_IRQn EXTI9_5_IRQn
 #define SPINDLE_SI_L_Pin GPIO_PIN_0
 #define SPINDLE_SI_L_GPIO_Port GPIOE
 

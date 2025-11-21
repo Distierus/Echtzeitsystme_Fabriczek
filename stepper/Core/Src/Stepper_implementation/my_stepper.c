@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <math.h> // wichtig für fabsf Funktion
 #include <task.h> // wichtig für vTaskDelay() !!!
+#include "stm32f7xx_hal_gpio.h"
 
 L6474_Handle_t stepperHandle;
 
@@ -221,18 +222,6 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim == &htim4)
     {
-        //Limit-Schalter prüfen und ob der Schrittmotor sich nach rechts bewegt
-        if (HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) && (HAL_GPIO_ReadPin(STEP_DIR_GPIO_Port, STEP_DIR_Pin) == 1))
-        {
-            HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
-            printf("Fail: Async movement stopped due to limit switch\r\n");
-            if (asyncDoneCallback && asyncStepperHandle)
-            {
-                asyncDoneCallback(asyncStepperHandle);
-            }
-            return;
-        }
-
         if (asyncStepsRemaining <= 1)
         {
             HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
@@ -244,6 +233,15 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
         }
         asyncStepsRemaining--;
     }
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	(void)GPIO_Pin;
+	//Limit-Schalter pruefen und ob der Schrittmotor sich nach rechts bewegt
+	HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
+	printf("Fail: Async movement stopped due to limit switch\r\n");
+	return;
 }
 
 
