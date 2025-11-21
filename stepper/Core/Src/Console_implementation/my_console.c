@@ -71,24 +71,17 @@ int StepperCommand(int argc, char **argv, void *context)
 	// da context nicht verwendet wird
 	(void)context;
 
-	// wenn weniger als zwei Argumente uebergeben wurden -> //TODO: Roman zeigen
-	if (argc < 2)
+	// Mechanikparameter – zentral definiert, Informationen aus dem Pflichtenheft
+	const int steps_per_turn = 200; // 200 Schritte pro Umdrehung, jeder Schritt hat 16 Mikrosteps
+	const int microsteps = 16;	// 200 * 16 = 3200 Mikro-Schritte pro Umdrehung
+	const float mm_per_turn = 4.0f;	// 4 mm vorwaerts/ruckwaerts pro Umdrehung beim Linearantrieb
+
+	// wenn keine zusätzliche commands dazu gegeben werden
+	if(argc == 0)
 	{
-		printf("Invalid number of arguments\r\n");
+		printf("FAIL: No subcommand provided\r\n");
 		return -1;
 	}
-
-    // Mechanikparameter – zentral definiert, Informationen aus dem Pflichtenheft
-    const int steps_per_turn = 200; // 200 Schritte pro Umdrehung, jeder Schritt hat 16 Mikrosteps
-    const int microsteps = 16;	// 200 * 16 = 3200 Mikro-Schritte pro Umdrehung
-    const float mm_per_turn = 4.0f;	// 4 mm vorwaerts/ruckwaerts pro Umdrehung beim Linearantrieb
-
-    // wenn keine zusätzliche commands dazu gegeben werden
-    if(argc < 1)
-    {
-        printf("FAIL: No subcommand provided\r\n");
-        return -1;
-    }
 
     // Abfrage ob subcommand "move": synchron oder asynchron
     else if (strcmp(argv[0], "move") == 0)
@@ -138,7 +131,8 @@ int StepperCommand(int argc, char **argv, void *context)
 
 
         // Treiber und LEDs werden angeschaltet -> siehe my_stepper.c
-        if (EnableStepperDrivers() != 0) {
+        if (EnableStepperDrivers() != 0)
+        {
             printf("FAIL: Could not enable drivers\r\n");
             return -1;
         }
@@ -147,7 +141,8 @@ int StepperCommand(int argc, char **argv, void *context)
         int current_steps = 0;
         // gibt die absolute Position des Schrittmotors zurück -> absolute Anzahl an steps ausgehend
         // von reference point werden zurueckgegeben
-        if (L6474_GetAbsolutePosition(stepperHandle, &current_steps) != errcNONE) {
+        if (L6474_GetAbsolutePosition(stepperHandle, &current_steps) != errcNONE)
+        {
             printf("FAIL: Could not read current position\r\n");
             return -1;
         }
@@ -168,7 +163,8 @@ int StepperCommand(int argc, char **argv, void *context)
             steps = (target_mm + current_mm) / 4 * steps_per_turn * microsteps;
         }
 
-        if (steps == 0) {
+        if (steps == 0)
+        {
             printf("OK, Already at target position\r\n");
             // man muss nichts machen und wartet dann wieder auf den nächsten Befehl
             return 0;
@@ -192,7 +188,8 @@ int StepperCommand(int argc, char **argv, void *context)
         if (!async)
         {
             int moving = 1;
-            while(moving == 1){
+            while(moving == 1)
+            {
                 L6474_IsMoving(stepperHandle, &moving); // Funktion schreibt in moving rein, ob sich Stepper noch bewegt oder nicht
                 vTaskDelay(100);
             }
@@ -202,7 +199,8 @@ int StepperCommand(int argc, char **argv, void *context)
     }
 
     // Abfrage ob sucommand "reference": synchron mit Stop bei Schalter
-    else if(strcmp(argv[0], "reference") == 0) {
+    else if(strcmp(argv[0], "reference") == 0)
+    {
     	float speed_mm_per_min = 500.0f;
     	const int steps_per_turn = 200;
 		const int microsteps = 16;
@@ -210,7 +208,8 @@ int StepperCommand(int argc, char **argv, void *context)
 		float steps_per_sec = speed_mm_per_min * (steps_per_turn * microsteps) / (mm_per_turn * sec_per_min);
 		SetStepperSpeed(steps_per_sec);
 
-        if (EnableStepperDrivers() != 0) {
+        if (EnableStepperDrivers() != 0)
+        {
             printf("FAIL: Could not enable drivers\r\n");
             return -1;
         }
@@ -243,9 +242,11 @@ int StepperCommand(int argc, char **argv, void *context)
     }
 
     // Abfrage fuer subcommand "position": Ausgabe in mm
-    else if(strcmp(argv[0], "position") == 0) {
+    else if(strcmp(argv[0], "position") == 0)
+    {
         int steps;
-        if (L6474_GetAbsolutePosition(stepperHandle, &steps) != errcNONE) {
+        if (L6474_GetAbsolutePosition(stepperHandle, &steps) != errcNONE)
+        {
             printf("Fail: Could not read absolute position\r\n");
             return -1;
         }
@@ -256,9 +257,11 @@ int StepperCommand(int argc, char **argv, void *context)
     }
 
     // Abfrage fuer subcommand "status"
-    else if(strcmp(argv[0], "status") == 0) {
+    else if(strcmp(argv[0], "status") == 0)
+    {
         L6474_Status_t status;
-        if (L6474_GetStatus(stepperHandle, &status) != errcNONE) {
+        if (L6474_GetStatus(stepperHandle, &status) != errcNONE)
+        {
             printf("FAIL: Could not read status\r\n");
             return -1;
         }
@@ -296,7 +299,8 @@ int StepperCommand(int argc, char **argv, void *context)
     }
 
     // Abfrage fuer sub command "cancel" (nur fuer asynchrone Fahrt)
-    else if(strcmp(argv[0], "cancel") == 0) {
+    else if(strcmp(argv[0], "cancel") == 0)
+    {
         if (L6474_StopMovement(stepperHandle) != errcNONE) {
             printf("FAIL: Could not cancel movement\r\n");
             return -1;
