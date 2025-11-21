@@ -153,14 +153,19 @@ int StepperCommand(int argc, char **argv, void *context)
         // Berechnung von Schritte pro Umdrehung und mm pro Umdrehung -> siehe Fotos Roman
         if (relative)
         {
-            steps = target_mm / 4 * steps_per_turn * microsteps;
+        	// current_mm + target_mm, current_mm, steps_per_turn, microsteps, mm_per_turn
+			float delta_mm = (target_mm + current_mm) - current_mm;
+			steps = (delta_mm * steps_per_turn * microsteps) / mm_per_turn;
+            // steps = target_mm / 4 * steps_per_turn * microsteps;
 
             // da nur eine absolute Position mit der move-Funktion angefahren werden kann
-            steps += current_steps;
+            // steps += current_steps;
         }
         else
         {
-            steps = (target_mm + current_mm) / 4 * steps_per_turn * microsteps;
+        	float delta_mm = target_mm - current_mm;
+        	steps = (delta_mm * steps_per_turn * microsteps) / mm_per_turn;
+            // steps = (target_mm + current_mm) / 4 * steps_per_turn * microsteps;
         }
 
         if (steps == 0)
