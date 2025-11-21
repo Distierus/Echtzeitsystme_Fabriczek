@@ -97,7 +97,8 @@ int StepperCommand(int argc, char **argv, void *context)
         	return -1;
         }
 
-
+        /*
+         * old command if causes -> falls neue subcommand Abfragen nicht mehr funktionieren
         if (argc == 2)
         {
         	// atof converts string to float
@@ -128,6 +129,51 @@ int StepperCommand(int argc, char **argv, void *context)
             printf("FAIL: Invalid move syntax\r\n");
             return -1;
         }
+        */
+
+
+        if (argc < 2) {
+			printf("Invalid number of arguments\r\n");
+			return -1;
+		}
+
+		target_mm = atof(argv[1]);
+
+
+
+		for (int i = 2; i < argc; ) {
+			// async flag
+			if (strcmp(argv[i], "-a") == 0)
+			{
+				async = 1;
+				i++;
+			}
+
+			// relative flag
+			else if (strcmp(argv[i], "-r") == 0)
+			{
+				relative = 1;
+				i++;
+			}
+
+			// speed flag
+			else if (strcmp(argv[i], "-s") == 0)
+			{
+				if (i == argc - 1) {
+					printf("Invalid number of arguments\r\n");
+					return -1;
+				}
+
+				speed_mm_per_min = atof(argv[i + 1]);
+				i += 2;
+			}
+
+			else
+			{
+				printf("Invalid Flag\r\n");
+				return -1;
+			}
+		}
 
 
         // Treiber und LEDs werden angeschaltet -> siehe my_stepper.c
@@ -136,6 +182,19 @@ int StepperCommand(int argc, char **argv, void *context)
             printf("FAIL: Could not enable drivers\r\n");
             return -1;
         }
+
+        if (HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) == GPIO_PIN_RESET)
+		{
+        	// wenn absoluter Wert angegeben wird
+			if (relative == 1)
+			{
+				if (target_mm > 0)
+				{
+					printf("FAIL: stepper cannot move in this direction due to reached limit switch\r\n");
+					return -1;
+				}
+			}
+		}
 
         // absolute Position abfragen
         int current_steps = 0;
@@ -213,12 +272,25 @@ int StepperCommand(int argc, char **argv, void *context)
 		float steps_per_sec = speed_mm_per_min * (steps_per_turn * microsteps) / (mm_per_turn * sec_per_min);
 		SetStepperSpeed(steps_per_sec);
 
+		// TODO: was passiert, wenn Stepper an Position 0 ist
+
 
         if (EnableStepperDrivers() != 0)
         {
             printf("FAIL: Could not enable drivers\r\n");
             return -1;
         }
+
+        // stepper already at reference mark
+        if(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET) {
+			// stepper faehrt von reference point zuerst mal nochmal 2mm weg
+			L6474_StepIncremental(stepperHandle, 1600);
+			// int result = L6474_StepIncremental(stepperHandle, 1600);
+			// printf("%d\n", result);
+			// result = L6474_StopMovement(stepperHandle); // just for safety
+			// printf("%d\n", result);
+			vTaskDelay(1000);
+		}
 
         L6474_StepIncremental(stepperHandle, -10000000);
 
@@ -301,7 +373,7 @@ int StepperCommand(int argc, char **argv, void *context)
 
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
-        blueLedBlinking = 1;
+        blueLedBlinking = 0;
         return 0;
     }
 
@@ -315,6 +387,12 @@ int StepperCommand(int argc, char **argv, void *context)
         printf("OK, Movement cancelled\r\n");
         return 0;
     }
+
+	// Abfrage fuer config subcommand
+    else if (strcmp(argv[0], "config") == 0)
+    {
+		// result = config(stepper_ctx, argc, argv);
+	}
 
     printf("FAIL: Unknown Stepper sub command\r\n");
     return -1;

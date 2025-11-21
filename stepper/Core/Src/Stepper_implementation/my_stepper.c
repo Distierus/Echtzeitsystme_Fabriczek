@@ -66,7 +66,7 @@ void Initialize_Stepper(void)
 		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, 1);
 	}
 
-
+	// L6474_SetPowerOutputs(stepperHandle, 1);
 }
 
 // from LibL6474 library documentation
@@ -238,22 +238,24 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	(void)GPIO_Pin;
-	//Limit-Schalter pruefen und ob der Schrittmotor sich nach rechts bewegt
-	HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
-	printf("Fail: Async movement stopped due to limit switch\r\n");
+	if (GPIO_Pin == LIMIT_SWITCH_Pin)
+	{
+		//Limit-Schalter pruefen und ob der Schrittmotor sich nach rechts bewegt
+		HAL_TIM_PWM_Stop_IT(&htim4, TIM_CHANNEL_4);
+		printf("FAIL: Async movement stopped due to limit switch\r\n");
+	}
 	return;
 }
 
 
 // Helferfunktion zur Aktivierung der Treiber (und LEDs)
-// TODO: kommentieren
 int EnableStepperDrivers(void)
 {
     L6474_Status_t status;
     // Status holen, um zu prüfen, ob Treiber schon aktiv sind
     if (L6474_GetStatus(stepperHandle, &status) != errcNONE)
     {
-        // LED FEHLER [cite: 399]
+        // LED FEHLER
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
         // for debugging
@@ -268,7 +270,7 @@ int EnableStepperDrivers(void)
         printf("Enabling power outputs...\r\n");
         if (L6474_SetPowerOutputs(stepperHandle, 1) != errcNONE)
         {
-            // LED FEHLER [cite: 399]
+            // LED FEHLER
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
             // for debugging
@@ -277,10 +279,10 @@ int EnableStepperDrivers(void)
             return -1; // Fehler
         }
 
-        // LED AKTIV (Grün AN, Blau blinkt) [cite: 309, 397-398]
+        // LED AKTIV (Grün AN, Blau blinkt)
         blueLedBlinking = 1;
         // for debugging
-        printf("blueLedBlinking enabled\n");
+        // printf("blueLedBlinking enabled\n");
         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
     }
