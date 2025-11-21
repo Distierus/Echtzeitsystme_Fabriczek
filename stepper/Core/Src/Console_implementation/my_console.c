@@ -272,13 +272,73 @@ int StepperCommand(int argc, char **argv, void *context)
 		float steps_per_sec = speed_mm_per_min * (steps_per_turn * microsteps) / (mm_per_turn * sec_per_min);
 		SetStepperSpeed(steps_per_sec);
 
-		// TODO: was passiert, wenn Stepper an Position 0 ist
+		bool power_output_enabled_after_refrun = false;
+		bool skip_reference_enabled = false;
+		float timeout_ms = 0;
+
+		for (int i = 1; i < argc; )
+		{
+			// additional timeout in seconds
+			if (strcmp(argv[i], "-t") == 0)
+			{
+				if (i == argc - 1)
+				{
+					printf("Invalid number of arguments\r\n");
+					return -1;
+				}
+
+				timeout_ms = atof(argv[2]) * 1000;
+				if (timeout_ms <= 0)
+				{
+					printf("Invalid timeout value\r\n");
+					return -1;
+				}
+				i += 2;
+			}
+
+			// enable power output after reference run
+			else if (strcmp(argv[i], "-e") == 0)
+			{
+				power_output_enabled_after_refrun = true;
+				i++;
+			}
+
+			// skip reference run
+			else if (strcmp(argv[i], "-s") == 0)
+			{
+				skip_reference_enabled = true;
+				i++;
+			}
+
+			else
+			{
+				printf("Invalid Flag\r\n");
+				return -1;
+			}
+		}
 
 
         if (EnableStepperDrivers() != 0)
         {
             printf("FAIL: Could not enable drivers\r\n");
             return -1;
+        }
+
+
+        // TODO: finish implementation of timeout
+        if (power_output_enabled == true)
+		{
+			// TODO: implement this function
+        	printf("FAIL: power output enabled after reference not implemented\r\n");
+		}
+
+        // TODO: new implementation after testing in DHBW -> test now
+        if (skip_reference_enabled == true)
+        {
+        	L6474_SetPositionMark(stepperHandle, 0);
+			L6474_SetAbsolutePosition(stepperHandle, 0);
+			doneReference = true;
+        	return 0;
         }
 
         // stepper already at reference mark
@@ -366,7 +426,7 @@ int StepperCommand(int argc, char **argv, void *context)
             printf("FAIL: Reset or re-init failed\r\n");
             HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
             HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
-            printf("blueLedBlinking disabled3\n");
+            // printf("blueLedBlinking disabled3\n"); // TODO: remove debugging
             blueLedBlinking = 0;
             return -1;
         }
@@ -412,7 +472,7 @@ void MyConsole_Init(void)
     CONSOLE_RegisterCommand(console_handle, "capability", "prints a specified string of capability bits", CapabilityFunc, NULL);
 
     // Stepper Befehl registrieren
-    CONSOLE_RegisterCommand(console_handle, "stepper", "Stepper control: move <AbsPos> | reference", StepperCommand, NULL);
+    CONSOLE_RegisterCommand(console_handle, "stepper", "commands to control the stepper command", StepperCommand, NULL);
 
     // Spindle initialisieren
     Initialize_Spindle(console_handle);
