@@ -314,3 +314,23 @@ void vLedBlinkTask(void* pvParameters)
 	  }
 	}
 }
+int check_abs(L6474_Handle_t t, int mm_to_move)
+{
+	const int steps_per_turn = 200; // 200 Schritte pro Umdrehung, jeder Schritt hat 16 Mikrosteps
+	const int microsteps = 16;	// 200 * 16 = 3200 Mikro-Schritte pro Umdrehung
+	const float mm_per_turn = 4.0f;	// 4 mm vorwaerts/ruckwaerts pro Umdrehung beim Linearantrieb
+	const float mm_max = 3500;
+	int current =0;
+
+	if( L6474_GetAbsolutePosition(t,current)!= errcNONE){
+		printf("FAIL: Could not read current position\r\n");
+		return -1;
+	}
+	if(current+mm_to_move<=0||current+mm_to_move>mm_max){
+		printf("FAIL: relative movement out of bounds");
+		return -1;
+	}
+	return 1;
+
+
+}

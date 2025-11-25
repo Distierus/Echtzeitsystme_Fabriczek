@@ -19,6 +19,7 @@ int StepTimerCancelAsync(void *pPWM);
 void Initialize_Stepper(void);
 void SetStepperSpeed(float steps_per_sec);
 void FindOptimalTimerSettings(float steps_per_sec, uint32_t timer_clk, uint16_t *out_prescaler, uint16_t *out_arr);
+int check_abs(L6474_Handle_t t, int mm_to_move);
 // void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim);
 int EnableStepperDrivers(void);
 void vLedBlinkTask(void* pvParameters);
